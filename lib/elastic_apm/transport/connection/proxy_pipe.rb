@@ -22,6 +22,8 @@ module ElasticAPM
     class Connection
       # @api private
       class ProxyPipe
+        include Logging
+        
         def initialize(enc = nil, compress: true)
           rd, wr = IO.pipe(enc)
 
@@ -52,7 +54,13 @@ module ElasticAPM
           end
 
           def self.finalize(io)
-            proc { io.close }
+            proc do
+              begin
+                io.close
+              rescue => e
+                debug '%s: finalize method failed', e.message
+              end
+            end
           end
 
           attr_reader :io
