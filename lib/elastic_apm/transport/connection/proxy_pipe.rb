@@ -22,8 +22,6 @@ module ElasticAPM
     class Connection
       # @api private
       class ProxyPipe
-        include Logging
-        
         def initialize(enc = nil, compress: true)
           rd, wr = IO.pipe(enc)
 
@@ -41,6 +39,7 @@ module ElasticAPM
         # @api private
         class Write
           include Logging
+          extend Logging
 
           def initialize(io, compress: true)
             @io = io
