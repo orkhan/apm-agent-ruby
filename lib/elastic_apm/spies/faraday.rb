@@ -109,7 +109,14 @@ module ElasticAPM
                   yield req if block
                 end
               rescue Faraday::ClientError, Faraday::ServerError => e # Faraday::Response::RaiseError
-                status = e.response_status
+                status =
+                  if e.respond_to?(:response_status)
+                    e.response_status
+                  elsif e.response && e.response.respond_to?(:status)
+                    e.response.status
+                  elsif e.response && e.response.respond_to?(:fetch)
+                    e.response[:status]
+                  end
                 http = span&.context&.http
                 if http && status
                   http.status_code = status.to_s
