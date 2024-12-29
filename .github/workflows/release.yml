@@ -43,7 +43,7 @@ jobs:
         if:  ${{ ! startsWith(github.ref, 'refs/tags') }}
 
       - name: generate build provenance
-        uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e  # v1.3.2
+        uses: actions/attest-build-provenance@c4fbc648846ca6f503a13a2281a5e7b98aa57202  # v2.0.1
         with:
           subject-path: "${{ github.workspace }}/pkg/*.gem" 
       
@@ -59,7 +59,7 @@ jobs:
         with:
           ruby-version: 2.6
       - name: Setup Git
-        uses: elastic/apm-pipeline-library/.github/actions/setup-git@current
+        uses: elastic/oblt-actions/git/setup@v1
       - name: Install build system
         run: .ci/scripts/install-build-system.sh
       - name: rake release:update_branch (only for tags)
@@ -74,10 +74,10 @@ jobs:
       - update-branch
     steps:
       - id: check
-        uses: elastic/apm-pipeline-library/.github/actions/check-dependent-jobs@current
+        uses: elastic/oblt-actions/check-dependent-jobs@v1
         with:
-          needs: ${{ toJSON(needs) }}
-      - run: ${{ steps.check.outputs.isSuccess }}
+          jobs: ${{ toJSON(needs) }}
+      - run: ${{ steps.check.outputs.is-success }}
       - if: ${{ always() && startsWith(github.ref, 'refs/tags') }}
         uses: elastic/oblt-actions/slack/notify-result@v1
         with:
