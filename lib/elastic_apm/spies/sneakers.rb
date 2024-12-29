@@ -25,7 +25,7 @@ module ElasticAPM
       include Logging
 
       def self.supported_version?
-        Gem.loaded_specs['sneakers'].version >= Gem::Version.create('2.12.0')
+        (Gem.loaded_specs['sneakers']&.version || Gem.loaded_specs['kicks']&.version) >= Gem::Version.create('2.12.0')
       end
 
       def install
